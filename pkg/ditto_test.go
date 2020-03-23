@@ -1,20 +1,26 @@
 package ditto
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNew(t *testing.T) {
 	var tests = []struct {
-		Name, Url, User, Pass, Expected string
+		Name, Url, User, Pass string
+		Expected              interface{}
 	}{
 		{
-			Name:     "normal",
-			Url:      "https://ditto.eclipse.org",
-			User:     "ditto",
-			Pass:     "ditto",
-			Expected: "ditto.Ditto",
+			Name: "normal",
+			Url:  "https://ditto.eclipse.org",
+			User: "ditto",
+			Pass: "ditto",
+			Expected: Ditto{
+				"https://ditto.eclipse.org",
+				"ditto",
+				"ditto",
+			},
 		},
 		{
 			Name:     "no-url",
@@ -40,11 +46,11 @@ func TestNew(t *testing.T) {
 	}
 	for _, test := range tests {
 		ditto, err := New(test.Url, test.User, test.Pass)
-		t.Run(test.Name, func(t *testing.T) {
-			if reflect.TypeOf(ditto).String() != test.Expected {
-				t.Errorf("Expected: %s", test.Expected)
-				t.Errorf("Got: %s", reflect.TypeOf(ditto))
-			}
-		})
+		if err != nil {
+			t.Run(test.Name, func(t *testing.T) {
+				assert.IsType(t, test.Expected, ditto)
+			})
+		} else {
+		}
 	}
 }
