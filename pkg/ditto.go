@@ -1,6 +1,9 @@
 package ditto
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
 type Ditto struct {
 	Url  string
@@ -9,9 +12,19 @@ type Ditto struct {
 }
 
 func New(url, user, pass string) (ditto Ditto, err error) {
-	if _, err := regexp.MatchString("https?://", url); err != nil {
-		return Ditto{}, err
+	ret, err := regexp.MatchString("https?://", url)
+	if err != nil {
+		return ditto, fmt.Errorf("invalid url: %s", url)
+	}
+	if !ret {
+		return ditto, fmt.Errorf("invalid url: %s", url)
+	}
+	if user == "" {
+		return ditto, fmt.Errorf("empty user")
+	}
+	if pass == "" {
+		return ditto, fmt.Errorf("empty password")
 	}
 	ditto = Ditto{url, user, pass}
-	return ditto, nil
+	return ditto, err
 }
